@@ -1,0 +1,78 @@
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func main() {
+    fmt.Println(myAtoi("4193 with words"))
+    fmt.Println(myAtoi("words and 987"))
+    fmt.Println(myAtoi("00000-42a1234"))
+}
+
+func myAtoi(s string) int {
+    var zero rune = '0'
+    var nine rune = '9'
+    var space rune = ' '
+    var dash rune = '-'
+    var plus rune = '+'
+
+    positive := true
+    signIsAllowed := true
+    spaceValidation := false
+
+    var ans int32 = 0
+
+    for pos, char := range s {
+        if char == space {
+            spaceValidation = true
+            continue
+        }
+
+        if signIsAllowed && (char == dash || char == plus) {
+            if char == dash {
+                positive = false
+            }
+
+            signIsAllowed = false
+            continue
+        }
+
+        if char >= zero && char <= nine {
+            parsedInt := parseIntChar(char)
+
+            newAns := ans * 10 + parsedInt
+
+            if (newAns - parsedInt) / 10 != ans {
+                if newAns < 0 {
+                    return math.MaxInt32
+                }
+
+                return math.MinInt32
+            }
+            ans = newAns
+        } else {
+            if pos > 0 && (s[pos - 1] == ' ' || (s[pos - 1] >= '0' && s[pos - 1] <= '9')) {
+                return returnInt32(positive, ans)
+            }
+            return 0
+        }
+    }
+
+    return returnInt32(positive, ans)
+}
+
+func returnInt32(positive bool, ans int32) int{
+    if !positive {
+        return -int(ans)
+    }
+    return int(ans)
+}
+
+func parseIntChar(c rune) int32 {
+    var zero rune = '0'
+    ans := c - zero
+
+    return int32(ans)
+}
